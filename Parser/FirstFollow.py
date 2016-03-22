@@ -38,8 +38,7 @@ class Set(object):
         for production in grammar.grammar_productions:
             r = production.rhs
             length = len(r)
-
-            for index in range(0, length - 1):
+            for index in range(0, length):
                 if r[index] in grammar.get_nt():
                     for first_set_sym in self.first_set(r[index+1:], grammar):
                         if first_set_sym == grammar.get_epsilon():
@@ -53,7 +52,7 @@ class Set(object):
             for key in inheritors_hashtable:
                 for nt in inheritors_hashtable[key]:
                     for terminal in self.follow_set_hashtable[key]:
-                        if terminal not in self.follow_set_hashtable[nt]:
+                        if terminal not in self.follow_set_hashtable[nt]: #and nt != grammar.get_epsilon():
                             self.follow_set_hashtable[nt].append(terminal)
                             idle = False
 
@@ -64,28 +63,3 @@ class Set(object):
 # for input in range(20, 28):
 #     print set.first_set([input], grammar)
 #     print 'follow of : ', input, " = ", set.follow_set(input), "\n"
-
-
-# class Nullable(object):
-#
-#     def nullable_nt(self, nt, grammar, must_avoid_list):
-#         for production in grammar.grammar_productions:
-#             if production.lhs == nt:
-#                 if not self.contains(production.lhs, grammar.get_terminals) \
-#                 and nt not in production.rhs \
-#                 and not self.contains(production.nt_in_production(grammar.get_nt), must_avoid_list)  \
-#                 and self.rest_also_nullable(production, grammar, must_avoid_list.append(nt)):
-#                     return True
-#             return False
-#
-#     def contains(self, set1, set2):
-#         for symbol in set1:
-#             if symbol in set2:
-#                 return True
-#         return False
-#
-#     def rest_also_nullable(self, production, grammar, must_avoid_list):
-#         for nt in production.nt_in_production:
-#             if not self.nullable_nt(nt, grammar, must_avoid_list):
-#                 return False
-#         return True

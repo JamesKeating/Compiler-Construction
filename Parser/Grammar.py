@@ -4,7 +4,7 @@ from Production import Production
 class Grammar(object):
 
     def __init__(self, grammar_num=1):
-
+        # Grammar from task 1 used by default not LL1
         if grammar_num == 1:
             self.grammar_productions = [
                 Production(20, [21, 99]),
@@ -24,6 +24,7 @@ class Grammar(object):
                 Production(25, [9]),
                 Production(26, [])
             ]
+        # if any argument but 1 is passed to grammar will use this LL1 grammar developed in task 3
         else:
             self.grammar_productions = [
                 Production(20, [21, 99]),
