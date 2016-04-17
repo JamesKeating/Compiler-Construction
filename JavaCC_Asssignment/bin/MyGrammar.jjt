@@ -1,0 +1,176 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  MULTI = true;
+  VISITOR = true;
+  //NODE_DEFAULT_VOID = true;}PARSER_BEGIN(MyParser)
+public class MyParser{  public static void main(String args []) throws ParseException  {    MyParser t = new MyParser(System.in);
+	System.out.println("Reading from standard input...");  	System.out.print("Enter sentence here: ");
+    try
+    {
+      ASTStart n = t.Start();
+	  MyParserVisitor v = new MyParserDumpVisitor();	  n.jjtAccept(v, null);
+      System.out.println("Thank you.");
+    }
+    catch (Exception e)
+    {
+      System.out.println("error in expression.\n"+ e.getMessage());
+      e.printStackTrace();
+    }            }}PARSER_END(MyParser)SKIP :{  " "| "\r"| "\t"| "\n"}
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < MINUS : "-" >
+| < TIMES : "*" >
+| < EQUAL : "=" >
+| < GREATER : " >" >
+| < LESS : "< " >
+}
+
+TOKEN :
+{
+  < INT : "int"  >
+|
+  < BOOL : "bool"  >
+}
+
+TOKEN :
+{
+  < NUM : (<DIGIT>)+  >
+| 
+  < ID : (<LETTER> )+  >
+|
+  < LEFT_PAREN : "(" >
+|
+  < RIGHT_PAREN : ")" >
+|
+  < LEFT_BRACE : "{" >
+|
+  < RIGHT_BRACE : "}" >
+|
+  < COLON : ":" >
+|
+  < SEMI_COLON : ";" >
+|
+  < IMPLIES : "->" >
+|
+  < COMMA : "," >
+|
+  < DEFINE : ":=" >
+}
+
+TOKEN :
+{
+  	<#DIGIT: ["0"-"9"]>
+|
+	<#LETTER: ["a"-"z", "A"-"Z"]>
+}ASTStart Start() #Start : {}{  Block()  {return jjtThis;}}
+void Block() : {}
+{
+	< LEFT_BRACE > Declset() Stmtset() < RIGHT_BRACE > 
+}
+
+void Declset(): {}{
+	Decl() Declset_Prime()}
+
+void Declset_Prime(): {}
+{
+	Declset()
+|	{ }}
+
+void Decl() : {}
+{
+	< INT > Vars() < SEMI_COLON >
+|  < BOOL > Vars() < SEMI_COLON > 
+}
+
+void Vars() : {}
+{
+	ID() Vars_Prime()
+}
+
+void Vars_Prime(): {}
+{
+	< COMMA > Vars()
+|	{ } 
+}
+
+void Stmtset(): {}{
+	Stmt() Stmtset_Prime()}
+
+void Stmtset_Prime(): {}
+{
+	< SEMI_COLON > Stmtset()
+| 	{ }
+} 
+
+void Stmt(): {}
+{
+	Assn()
+}
+
+void Assn():
+{}
+{
+	ID() < DEFINE > Arith() [Comp_Prime() [< IMPLIES > Arith() < COLON > Arith()]]
+}
+void Arith(): {}
+{
+	Term() Arith_Prime()
+}
+
+void Arith_Prime(): {}
+{
+	< PLUS > Arith()
+| 	< MINUS > Arith()
+|	{ }
+}
+
+void Term(): {}
+{
+	Factor() Term_Prime()
+}
+
+void Term_Prime():
+{}
+{
+	< TIMES > Term()
+|	{ }
+}
+
+void Factor():
+{}
+{
+	ID()
+| 	Num()
+| 	< LEFT_PAREN > Arith() < RIGHT_PAREN > 
+}
+
+void Comp():
+{}
+{
+	Arith() Comp_Prime()
+}
+
+void Comp_Prime():
+{}
+{
+	< EQUAL > Arith()
+| 	< GREATER > Arith()
+| 	< LESS > Arith() 
+}
+
+void Cond():
+{}{
+	Comp() < IMPLIES > Arith() < COLON > Arith()}
+
+void ID() #ID:
+{Token t;}{
+	t = < ID >
+	{ jjtThis.jjtSetValue(t.image);}}
+
+void Num() #Num:
+{Token t;}
+{
+	t = < NUM >
+	{ jjtThis.jjtSetValue(t.image);}
+}
