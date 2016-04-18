@@ -2,7 +2,7 @@
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  MULTI = true;
   VISITOR = true;
-  //NODE_DEFAULT_VOID = true;}PARSER_BEGIN(MyParser)
+  NODE_DEFAULT_VOID = true;}PARSER_BEGIN(MyParser)
 public class MyParser{  public static void main(String args []) throws ParseException  {    MyParser t = new MyParser(System.in);
 	System.out.println("Reading from standard input...");  	System.out.print("Enter sentence here: ");
     try
@@ -22,8 +22,8 @@ TOKEN : /* OPERATORS */
 | < MINUS : "-" >
 | < TIMES : "*" >
 | < EQUAL : "=" >
-| < GREATER : " >" >
-| < LESS : "< " >
+| < GREATER : ">" >
+| < LESS : "<" >
 }
 
 TOKEN :
@@ -77,10 +77,10 @@ void Declset_Prime(): {}
 	Declset()
 |	{ }}
 
-void Decl() : {}
+void Decl() #Decl : {}
 {
-	< INT > Vars() < SEMI_COLON >
-|  < BOOL > Vars() < SEMI_COLON > 
+	Int() Vars() < SEMI_COLON >
+|   Bool() Vars() < SEMI_COLON > 
 }
 
 void Vars() : {}
@@ -108,24 +108,38 @@ void Stmt(): {}
 	Assn()
 }
 
-void Assn():
+void Assn() #Assn:
 {}
 {
-	ID() < DEFINE > Arith() [Comp_Prime() [< IMPLIES > Arith() < COLON > Arith()]]
+	ID() < DEFINE > Arith() Assn_Prime() 
 }
-void Arith(): {}
+
+void Assn_Prime():
+{}
+{
+	Comp_Prime() Assn_Prime2() 
+	|	{}
+}
+
+void Assn_Prime2() #Cond:
+{}
+{
+	< IMPLIES > Arith() < COLON > Arith()
+|	{}
+}  
+void Arith() #Arith: {}
 {
 	Term() Arith_Prime()
 }
 
 void Arith_Prime(): {}
 {
-	< PLUS > Arith()
-| 	< MINUS > Arith()
+	Plus() Arith()
+| 	Minus() Arith()
 |	{ }
 }
 
-void Term(): {}
+void Term() #Term: {}
 {
 	Factor() Term_Prime()
 }
@@ -137,7 +151,7 @@ void Term_Prime():
 |	{ }
 }
 
-void Factor():
+void Factor() #Factor:
 {}
 {
 	ID()
@@ -151,12 +165,12 @@ void Comp():
 	Arith() Comp_Prime()
 }
 
-void Comp_Prime():
+void Comp_Prime() #Comp:
 {}
 {
-	< EQUAL > Arith()
-| 	< GREATER > Arith()
-| 	< LESS > Arith() 
+	Equal() Arith()
+| 	Greater() Arith()
+| 	Less() Arith() 
 }
 
 void Cond():
@@ -166,11 +180,62 @@ void Cond():
 void ID() #ID:
 {Token t;}{
 	t = < ID >
-	{ jjtThis.jjtSetValue(t.image);}}
+	{
+		{ jjtThis.jjtSetValue(t.image);}
+	}}
 
 void Num() #Num:
 {Token t;}
 {
 	t = < NUM >
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Plus() #Plus:
+{Token t;}
+{
+	t = < PLUS > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Minus() #Minus:
+{Token t;}
+{
+	t = < MINUS > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Int() #Int:
+{Token t;}
+{
+	t = < INT > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Bool() #Bool:
+{Token t;}
+{
+	t = < BOOL > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Greater() #Greater:
+{Token t;}
+{
+	t = < GREATER > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Equal() #Equal:
+{Token t;}
+{
+	t = < EQUAL > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Less() #Less:
+{Token t;}
+{
+	t = < LESS >	
 	{ jjtThis.jjtSetValue(t.image);}
 }
