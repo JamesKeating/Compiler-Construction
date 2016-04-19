@@ -22,8 +22,8 @@ TOKEN : /* OPERATORS */
 | < MINUS : "-" >
 | < TIMES : "*" >
 | < EQUAL : "=" >
-| < GREATER : " >" >
-| < LESS : "< " >
+| < GREATER : ">" >
+| < LESS : "<" >
 }
 
 TOKEN :
@@ -77,10 +77,10 @@ void Declset_Prime(): {}
 	Declset()
 |	{ }}
 
-void Decl() : {}
+void Decl() #Decl : {}
 {
-	< INT > Vars() < SEMI_COLON >
-|  < BOOL > Vars() < SEMI_COLON > 
+	Int() Vars() < SEMI_COLON >
+|   Bool() Vars() < SEMI_COLON > 
 }
 
 void Vars() : {}
@@ -111,8 +111,22 @@ void Stmt(): {}
 void Assn() #Assn:
 {}
 {
-	ID() < DEFINE > Arith() [Comp_Prime() [< IMPLIES > Arith() < COLON > Arith()]]
+	ID() < DEFINE > Arith() Assn_Prime() 
 }
+
+void Assn_Prime():
+{}
+{
+	Comp_Prime() Assn_Prime2() 
+	|	{}
+}
+
+void Assn_Prime2() #Cond:
+{}
+{
+	< IMPLIES > Arith() Jump() Arith()
+|	{}
+}  
 void Arith() #Arith: {}
 {
 	Term() Arith_Prime()
@@ -151,22 +165,24 @@ void Comp():
 	Arith() Comp_Prime()
 }
 
-void Comp_Prime():
+void Comp_Prime() #Comp:
 {}
 {
-	< EQUAL > Arith()
-| 	< GREATER > Arith()
-| 	< LESS > Arith() 
+	Equal() Arith()
+| 	Greater() Arith()
+| 	Less() Arith() 
 }
 
 void Cond():
 {}{
-	Comp() < IMPLIES > Arith() < COLON > Arith()}
+	Comp() < IMPLIES > Arith() Jump() Arith()}
 
 void ID() #ID:
 {Token t;}{
 	t = < ID >
-	{ jjtThis.jjtSetValue(t.image);}}
+	{
+		{ jjtThis.jjtSetValue(t.image);}
+	}}
 
 void Num() #Num:
 {Token t;}
@@ -186,5 +202,47 @@ void Minus() #Minus:
 {Token t;}
 {
 	t = < MINUS > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Int() #Int:
+{Token t;}
+{
+	t = < INT > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Bool() #Bool:
+{Token t;}
+{
+	t = < BOOL > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Greater() #Greater:
+{Token t;}
+{
+	t = < GREATER > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Equal() #Equal:
+{Token t;}
+{
+	t = < EQUAL > 
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Less() #Less:
+{Token t;}
+{
+	t = < LESS >	
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Jump() #Jump:
+{Token t;}
+{
+	t = < COLON >	
 	{ jjtThis.jjtSetValue(t.image);}
 }
