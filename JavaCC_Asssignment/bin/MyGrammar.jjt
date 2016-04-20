@@ -124,7 +124,7 @@ void Assn_Prime():
 void Assn_Prime2() #Cond:
 {}
 {
-	< IMPLIES > Arith() < COLON > Arith()
+	< IMPLIES > Arith() Jump() Arith()
 |	{}
 }  
 void Arith() #Arith: {}
@@ -175,7 +175,7 @@ void Comp_Prime() #Comp:
 
 void Cond():
 {}{
-	Comp() < IMPLIES > Arith() < COLON > Arith()}
+	Comp() < IMPLIES > Arith() Jump() Arith()}
 
 void ID() #ID:
 {Token t;}{
@@ -237,5 +237,12 @@ void Less() #Less:
 {Token t;}
 {
 	t = < LESS >	
+	{ jjtThis.jjtSetValue(t.image);}
+}
+
+void Jump() #Jump:
+{Token t;}
+{
+	t = < COLON >	
 	{ jjtThis.jjtSetValue(t.image);}
 }
